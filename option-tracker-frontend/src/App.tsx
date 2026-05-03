@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react'
 import axios from 'axios'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 interface OptionData {
   ticker: string;
   strikePrice: number;
@@ -26,8 +28,7 @@ function App() {
   // Function to fetch all saved options from the backend
   const fetchHistory = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/options/all');
-      setHistory(res.data);
+      const res = await axios.get(`${API_BASE_URL}/api/options/all`);      setHistory(res.data);
     } catch (err) {
       console.error("Error fetching history", err);
     }
@@ -47,7 +48,7 @@ function App() {
         underlyingPrice: Number(formData.underlyingPrice),
         currentOptionPrice: Number(formData.currentOptionPrice)
       };
-      const response = await axios.post('http://localhost:8080/api/options/analyze', payload);
+      const response = await axios.post(`${API_BASE_URL}/api/options/analyze`, payload);
       setAnalysis(response.data);
       await fetchHistory();
     } catch (err) {

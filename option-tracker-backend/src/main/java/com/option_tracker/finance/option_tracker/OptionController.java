@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/options")
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
+@CrossOrigin(origins = {"http://localhost:5173", "https://covered-call-option-tracker.vercel.app/"}, allowedHeaders = "*")
 public class OptionController {
 
     @Autowired
