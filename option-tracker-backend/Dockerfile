@@ -19,8 +19,8 @@ COPY src src
 # Build the application
 RUN ./gradlew clean build -x test
 
-# Find the built JAR and rename it for simplicity
-RUN mv build/libs/*.jar app.jar
+# Since we told Gradle to name it app.jar, we just move it up
+RUN mv build/libs/app.jar .
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
