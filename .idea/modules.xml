@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/covered_call_option_tracker.iml" filepath="$PROJECT_DIR$/.idea/covered_call_option_tracker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/option-tracker.main.iml" filepath="$PROJECT_DIR$/.idea/modules/option-tracker.main.iml" />
     </modules>
   </component>
 </project>
