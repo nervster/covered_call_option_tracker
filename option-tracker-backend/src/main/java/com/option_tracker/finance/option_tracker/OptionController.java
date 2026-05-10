@@ -5,6 +5,8 @@ import com.option_tracker.finance.option_tracker.dto.RollAnalysis;
 import com.option_tracker.finance.option_tracker.repository.OptionRepository;
 import com.option_tracker.finance.option_tracker.service.OptionMathService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,16 +23,18 @@ public class OptionController {
     private OptionRepository optionRepository;
 
     @GetMapping("/all")
-    public List<FinancialOption> getAllOptions() {
-        return optionRepository.findAll();
+    public List<FinancialOption> getAllOptions(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+        return optionRepository.findByUserId(userId);
     }
 
     @PostMapping("/analyze")
-    public RollAnalysis analyzeTrade(@RequestBody FinancialOption option) {
-        System.out.println("Received Option: " + option.toString());
-        System.out.println("HIT CONTROLLER: " + option.getTicker());
+    public FinancialOption analyzeAndSave(@RequestBody FinancialOption option, @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+        option.setUserId(userId);
 
-        optionRepository.save(option);
-        return mathService.analyzeOption(option);
+        // Add your 'stair-step' analysis logic here...
+
+        return optionRepository.save(option);
     }
 }

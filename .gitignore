@@ -26,3 +26,4 @@ replay_pid*
 /option-tracker-frontend/.env
 /option-tracker-backend/.env
 .DS_Store
+/option-tracker-backend/src/main/resources/*
