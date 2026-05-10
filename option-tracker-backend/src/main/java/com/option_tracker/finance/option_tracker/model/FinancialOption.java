@@ -17,11 +17,11 @@ import java.time.LocalDate;
 public class FinancialOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String userId;
 
-    private Long id;
     private String ticker;
     private String optionType;
     private double strikePrice;
