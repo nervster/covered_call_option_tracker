@@ -39,8 +39,8 @@ export const TradeHistory = ({ history }: Props) => {
                 <td style={cellStyle}>{item.optionType}</td>
                 <td style={cellStyle}>${item.strikePrice.toFixed(2)}</td>
                 <td style={cellStyle}>{item.expiryDate}</td>
-                <td style={cellStyle}>${item.underlyingPrice.toFixed(2)}</td>
-                <td style={cellStyle}>${item.currentOptionPrice.toFixed(2)}</td>
+                <td style={cellStyle}>{item.underlyingPrice ? `$${item.underlyingPrice.toFixed(2)}` : '-'}</td>
+                <td style={cellStyle}>{item.currentOptionPrice ? `$${item.currentOptionPrice.toFixed(2)}` : '-'}</td>
               </tr>
             ))}
           </tbody>
