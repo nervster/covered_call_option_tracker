@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { MoveRight, LineChart, Cpu, ArrowRightLeft } from "lucide-react";
 import { Dashboard } from "./pages/Dashboard";
 
@@ -19,6 +19,9 @@ export default function App() {
               </button>
             </SignInButton>
           </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </header>
 
