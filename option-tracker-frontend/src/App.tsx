@@ -1,5 +1,6 @@
-import { SignedOut, SignInButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import { MoveRight, LineChart, Cpu, ArrowRightLeft } from "lucide-react";
+import { Dashboard } from "./pages/Dashboard";
 
 export default function App() {
   return (
@@ -22,6 +23,12 @@ export default function App() {
       </header>
 
       <main>
+        {/* State 1: User is Logged In */}
+        <SignedIn>
+          <div className="animate-in fade-in duration-500">
+            <Dashboard />
+          </div>
+        </SignedIn>
         <SignedOut>
           {/* Hero Section */}
           <section className="px-4 py-24 text-center lg:py-32">

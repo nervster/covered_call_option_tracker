@@ -10,6 +10,8 @@ export const Dashboard = () => {
         analyzeMutation.mutate(formData);
     };
 
+    console.log("rendered")
+
     return (
         <div style={{ margin: '0 auto' }}>
             <h2>Options Strategy Engine</h2>
