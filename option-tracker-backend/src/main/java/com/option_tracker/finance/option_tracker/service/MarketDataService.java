@@ -24,8 +24,15 @@ public class MarketDataService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public List<String> getExpirationDates(String ticker) {
-        String url = String.format("%s/v3/reference/options/contracts?underlying_ticker=%s&expired=false&limit=1000&apiKey=%s",
-                baseUrl, ticker.toUpperCase(), apiKey);
+        double price = getLatestPrice(ticker);
+
+        long strikeTarget = Math.round(price / 10.0) * 10;
+        String strikeFilter = (strikeTarget > 0) ? "&strike_price=" + strikeTarget : "";
+
+        String url = String.format(
+                "%s/v3/reference/options/contracts?underlying_ticker=%s%s&contract_type=call&expired=false&limit=1000&apiKey=%s",
+                baseUrl, ticker.toUpperCase(), strikeFilter, apiKey
+        );
 
         ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(
                 url,
@@ -42,11 +49,13 @@ public class MarketDataService {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
 
-        return results.stream()
+        List<String> data = results.stream()
                 .map(res -> (String) res.get("expiration_date"))
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
+
+        return data;
     }
 
     public List<Double> getStrikes(String ticker, String expiration) {
@@ -133,6 +142,28 @@ public class MarketDataService {
             }).collect(Collectors.toList());
         } catch (Exception e) {
             return Collections.emptyList();
+        }
+    }
+
+    public double getLatestPrice(String ticker) {
+        // Yahoo Finance chart endpoint for the last 1-day interval
+        String url = String.format("https://query2.finance.yahoo.com/v8/finance/chart/%s?interval=1m&range=1d", ticker.toUpperCase());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", "Mozilla/5.0"); // Essential to avoid 429/403
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            Map<String, Object> chart = (Map<String, Object>) response.getBody().get("chart");
+            List<Map<String, Object>> result = (List<Map<String, Object>>) chart.get("result");
+            Map<String, Object> meta = (Map<String, Object>) result.get(0).get("meta");
+
+            // 'regularMarketPrice' is the most reliable current price field
+            Object price = meta.get("regularMarketPrice");
+            return price instanceof Number ? ((Number) price).doubleValue() : 0.0;
+        } catch (Exception e) {
+            return 0.0;
         }
     }
 }
