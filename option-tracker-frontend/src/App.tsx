@@ -1,117 +1,37 @@
-import {useEffect, useState} from 'react'
-import axios from 'axios'
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { Dashboard } from "./pages/Dashboard";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-interface OptionData {
-  ticker: string;
-  strikePrice: number;
-  expiryDate: string;
-  optionType: 'CALL' | 'PUT';
-  underlyingPrice: number;
-  currentOptionPrice: number;
-}
-
-function App() {
-  const [formData, setFormData] = useState<OptionData>({
-    ticker: 'TSLA',
-    strikePrice: 200,
-    expiryDate: '',
-    optionType: 'CALL',
-    underlyingPrice: 210,
-    currentOptionPrice: 5.50
-  });
-
-  const [analysis, setAnalysis] = useState<any>(null);
-  const [history, setHistory] = useState<OptionData[]>([]);
-
-  // Function to fetch all saved options from the backend
-  const fetchHistory = async () => {
-    try {
-      const res = await axios.get(`${API_BASE_URL}/api/options/all`);      setHistory(res.data);
-    } catch (err) {
-      console.error("Error fetching history", err);
-    }
-  };
-
-  // Fetch history when the component first loads
-  useEffect(() => {
-    fetchHistory();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        ...formData,
-        strikePrice: Number(formData.strikePrice),
-        underlyingPrice: Number(formData.underlyingPrice),
-        currentOptionPrice: Number(formData.currentOptionPrice)
-      };
-      const response = await axios.post(`${API_BASE_URL}/api/options/analyze`, payload);
-      setAnalysis(response.data);
-      await fetchHistory();
-    } catch (err) {
-      console.error("Analysis failed", err);
-    }
-  };
-
+export default function App() {
   return (
-      <div style={{ padding: '40px', maxWidth: '600px', margin: '0 auto', fontFamily: 'system-ui' }}>
-        <h2>Options Strategy Engine</h2>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
+      <header style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', borderBottom: '1px solid #ddd' }}>
+        <h1 style={{ fontSize: '1.2rem', margin: 0 }}>Stair-Step Tracker</h1>
+        
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button style={{ padding: '8px 16px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              Sign In
+            </button>
+          </SignInButton>
+        </SignedOut>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          <input placeholder="Ticker (e.g. TSLA)" onChange={e => setFormData({...formData, ticker: e.target.value})} />
-          <input type="number" placeholder="Strike Price" onChange={e => setFormData({...formData, strikePrice: Number(e.target.value)})} />
-          <input type="date" onChange={e => setFormData({...formData, expiryDate: e.target.value})} />
-          <select onChange={e => setFormData({...formData, optionType: e.target.value as any})}>
-            <option value="CALL">Call</option>
-            <option value="PUT">Put</option>
-          </select>
-          <input type="number" placeholder="Current Stock Price" onChange={e => setFormData({...formData, underlyingPrice: Number(e.target.value)})} />
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
+      </header>
 
-          <button type="submit" style={{ padding: '10px', background: '#007bff', color: 'white', border: 'none', cursor: 'pointer' }}>
-            Analyze Trade
-          </button>
-        </form>
-
-        {analysis && (
-            <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', borderLeft: '5px solid #007bff' }}>
-              <h3>Recommendation: {analysis.recommendation}</h3>
-              <p><strong>Reasoning:</strong> {analysis.reasoning}</p>
-              {analysis.targetRollCredit > 0 && <p><strong>Target Credit:</strong> ${analysis.targetRollCredit.toFixed(2)}</p>}
-            </div>
-        )}
-
-        <div style={{ marginTop: '50px' }}>
-          <h3>Trade History</h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-            <thead>
-            <tr style={{ textAlign: 'left', borderBottom: '2px solid #ddd' }}>
-              <th style={{ padding: '10px' }}>Ticker</th>
-              <th>Type</th>
-              <th>Strike</th>
-              <th>Expiry</th>
-              <th>Stock Price</th>
-              <th>Premium</th>
-            </tr>
-            </thead>
-            <tbody>
-            {history.map((item: any, index) => (
-                <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '10px' }}>{item.ticker}</td>
-                  <td>{item.optionType}</td>
-                  <td>${item.strikePrice}</td>
-                  <td>{item.expiryDate}</td>
-                  <td>${item.underlyingPrice}</td>
-                  <td>${item.currentOptionPrice}</td>
-                </tr>
-            ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-  )
+      <main>
+        <SignedIn>
+          <Dashboard />
+        </SignedIn>
+        
+        <SignedOut>
+          <div style={{ textAlign: 'center', marginTop: '100px' }}>
+            <h2>Welcome to the Strategy Engine</h2>
+            <p>Please sign in to manage your options portfolio.</p>
+          </div>
+        </SignedOut>
+      </main>
+    </div>
+  );
 }
-
-export default App

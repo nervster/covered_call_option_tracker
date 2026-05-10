@@ -24,3 +24,5 @@ hs_err_pid*
 replay_pid*
 
 /option-tracker-frontend/.env
+/option-tracker-backend/.env
+.DS_Store
